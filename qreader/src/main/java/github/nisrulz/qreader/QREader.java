@@ -86,7 +86,7 @@ public class QREader {
    * @param builder
    *     the builder
    */
-/*
+  /*
    * Instantiates a new QREader
    *
    * @param builder the builder
@@ -101,7 +101,7 @@ public class QREader {
     this.surfaceView = builder.surfaceView;
     //for better performance we should use one detector for all Reader, if builder not specify it
     if (builder.barcodeDetector == null) {
-      this.barcodeDetector = BarcodeDetectorHolder.getBarcodeDetector(context);
+      this.barcodeDetector = BarcodeDetectorHolder.getBarcodeDetector(context, builder.barcodeFormats);
     }
     else {
       this.barcodeDetector = builder.barcodeDetector;
@@ -111,14 +111,14 @@ public class QREader {
   public void initAndStart(final SurfaceView surfaceView) {
 
     surfaceView.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override
-          public void onGlobalLayout() {
-            init();
-            start();
-            removeOnGlobalLayoutListener(surfaceView, this);
-          }
-        });
+            .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+              @Override
+              public void onGlobalLayout() {
+                init();
+                start();
+                removeOnGlobalLayoutListener(surfaceView, this);
+              }
+            });
   }
 
   /**
@@ -156,10 +156,10 @@ public class QREader {
       });
 
       cameraSource =
-          new CameraSource.Builder(context, barcodeDetector).setAutoFocusEnabled(autoFocusEnabled)
-              .setFacing(facing)
-              .setRequestedPreviewSize(width, height)
-              .build();
+              new CameraSource.Builder(context, barcodeDetector).setAutoFocusEnabled(autoFocusEnabled)
+                      .setFacing(facing)
+                      .setRequestedPreviewSize(width, height)
+                      .build();
     }
     else {
       Log.e(LOGTAG, "Barcode recognition libs are not downloaded and are not operational");
@@ -184,7 +184,7 @@ public class QREader {
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   private static void removeOnGlobalLayoutListener(View v,
-      ViewTreeObserver.OnGlobalLayoutListener listener) {
+                                                   ViewTreeObserver.OnGlobalLayoutListener listener) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
       v.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
     }
@@ -208,13 +208,13 @@ public class QREader {
   }
 
   private void startCameraView(Context context, CameraSource cameraSource,
-      SurfaceView surfaceView) {
+                               SurfaceView surfaceView) {
     if (cameraRunning) {
       throw new IllegalStateException("Camera already started!");
     }
     try {
       if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-          != PackageManager.PERMISSION_GRANTED) {
+              != PackageManager.PERMISSION_GRANTED) {
         Log.e(LOGTAG, "Permission not granted!");
       }
       else if (!cameraRunning && cameraSource != null && surfaceView != null) {
@@ -274,6 +274,7 @@ public class QREader {
     private int width;
     private int height;
     private int facing;
+    private int barcodeFormats = Barcode.QR_CODE;
     private BarcodeDetector barcodeDetector;
 
     /**
@@ -345,6 +346,18 @@ public class QREader {
      */
     public Builder facing(int facing) {
       this.facing = facing;
+      return this;
+    }
+
+    /**
+     * Facing builder.
+     *
+     * @param formats
+     *     from @{@link Barcode}
+     * @return the builder
+     */
+    public Builder formats(int formats) {
+      this.barcodeFormats = formats;
       return this;
     }
 

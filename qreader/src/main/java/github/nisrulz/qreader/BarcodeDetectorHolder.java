@@ -17,7 +17,7 @@
 package github.nisrulz.qreader;
 
 import android.content.Context;
-import com.google.android.gms.vision.barcode.Barcode;
+
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 /**
@@ -31,12 +31,14 @@ class BarcodeDetectorHolder {
    *
    * @param context
    *     the context
+   * @param barcodeFormats
+   *     the barcode formats from @{@link com.google.android.gms.vision.barcode.Barcode}
    * @return the barcode detector
    */
-  static BarcodeDetector getBarcodeDetector(Context context) {
+  static BarcodeDetector getBarcodeDetector(Context context, int barcodeFormats) {
     if (detector == null) {
       detector = new BarcodeDetector.Builder(context.getApplicationContext()).setBarcodeFormats(
-          Barcode.QR_CODE).build();
+              barcodeFormats).build();
     }
     return detector;
   }
